@@ -1,0 +1,76 @@
+import heapq
+
+# Definimos los niveles de prioridad
+PRIORIDAD = {"Crítica": 1, "Alta": 2, "Baja": 3}
+
+class Paciente:
+    def _init_(self, nombre, edad, dpi, tipo_sangre):
+        self.nombre = nombre
+        self.edad = edad
+        self.dpi = dpi
+        self.tipo_sangre = tipo_sangre
+
+    def _str_(self):
+        return f"{self.nombre}, {self.edad} años, DPI: {self.dpi}, Tipo de Sangre: {self.tipo_sangre}"
+
+class Enfermedad:
+    def _init_(self, nombre, descripcion, prioridad):
+        self.nombre = nombre
+        self.descripcion = descripcion
+        self.prioridad = PRIORIDAD[prioridad]  # Se almacena como un número
+
+    def _str_(self):
+        return f"{self.nombre} ({self.descripcion}) - Prioridad: {self.prioridad}"
+
+class Asignador:
+    def _init_(self):
+        self.cola_prioridad = []  # Usamos heapq para la cola de prioridad
+
+    def agregar_paciente(self, paciente, enfermedad):
+        heapq.heappush(self.cola_prioridad, (enfermedad.prioridad, paciente, enfermedad))
+        print(f"Paciente {paciente.nombre} agregado con prioridad {enfermedad.prioridad}")
+
+    def atender_paciente(self):
+        if self.cola_prioridad:
+            prioridad, paciente, enfermedad = heapq.heappop(self.cola_prioridad)
+            print(f"Atendiendo a {paciente.nombre} con {enfermedad.nombre} (Prioridad {prioridad})")
+        else:
+            print("No hay pacientes en espera.")
+
+    def mostrar_pacientes(self):
+        if not self.cola_prioridad:
+            print("No hay pacientes en la cola.")
+        else:
+            print("\nLista de Pacientes en espera:")
+            for prioridad, paciente, enfermedad in sorted(self.cola_prioridad):
+                print(f"- {paciente} | Enfermedad: {enfermedad.nombre} | Prioridad: {prioridad}")
+
+# --- Pruebas ---
+if _name_ == "_main_":
+    asignador = Asignador()
+
+    # Creación de pacientes y enfermedades
+    paciente1 = Paciente("Juan Pérez", 45, "123456789", "O+")
+    enfermedad1 = Enfermedad("Infarto", "Dolor en el pecho", "Crítica")
+
+    paciente2 = Paciente("María López", 30, "987654321", "A-")
+    enfermedad2 = Enfermedad("Fractura", "Brazo roto", "Alta")
+
+    paciente3 = Paciente("Carlos Ramírez", 60, "567891234", "B+")
+    enfermedad3 = Enfermedad("Gripe", "Fiebre y malestar", "Baja")
+
+    # Agregar pacientes a la cola
+    asignador.agregar_paciente(paciente1, enfermedad1)
+    asignador.agregar_paciente(paciente2, enfermedad2)
+    asignador.agregar_paciente(paciente3, enfermedad3)
+
+    # Mostrar la lista de pacientes
+    asignador.mostrar_pacientes()
+
+    # Atender pacientes en orden de prioridad
+    asignador.atender_paciente()
+    asignador.atender_paciente()
+    asignador.atender_paciente()
+
+    # Intentar atender cuando la cola está vacía
+    asignador.atender_paciente()
